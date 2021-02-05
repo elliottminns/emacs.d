@@ -1,16 +1,34 @@
 ;; init-package.el
 
 (eval-and-compile
-  (require 'package)
-  (setq package-archives '(("elpa" . "https://elpa.gnu.org/packages/")
+  (setq straight-use-package-by-default t
+	straight-build-dir (format "build-%s" emacs-version))
+
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+	(bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+	  (url-retrieve-synchronously
+	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+	   'silent 'inhibit-cookies)
+	(goto-char (point-max))
+	(eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+
+  (straight-use-package 'use-package))
+
+  ;(require 'package)
+  ;(setq package-archives '(("elpa" . "https://elpa.gnu.org/packages/")
                            ;("marmalade" . "https://marmalade-repo.org/packages/")
-                           ("melpa" . "https://melpa.org/packages/")))
-  (package-initialize)
+                           ;("melpa" . "https://melpa.org/packages/")))
+  ;(package-initialize)
   ;; i always fetch the archive contents on startup and during compilation, which is slow
-  (package-refresh-contents)
-  (unless (package-installed-p 'use-package)
-    (package-install 'use-package))
-  (require 'use-package)
-  (setf use-package-always-ensure t))
+  ;(package-refresh-contents)
+  ;(unless (package-installed-p 'use-package)
+    ;(package-install 'use-package))
+  ;(require 'use-package)
+  ;(setf use-package-always-ensure t))
 
 (provide 'init-package)
