@@ -1,9 +1,7 @@
 ;; init-lsp.el
 
 (use-package lsp-mode
-  :hook ((clojure-mode . lsp)
-         (clojurec-mode . lsp)
-         (clojurescript-mode . lsp))
+  :hook ((go-mode . lsp))
   :custom
   (lsp-enable-file-watchers nil)
   (lsp-headerline-breadcrumb-enable nil)

@@ -6,3 +6,7 @@ url/
 *.eld
 straight
 var/
+.lsp-session*
+transient/
+projectile.cache
+eshell

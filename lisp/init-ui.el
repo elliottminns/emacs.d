@@ -42,19 +42,24 @@
   :defer t
   :blackout auto-revert-mode)
 
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1)
+  :custom ((doom-modeline-height 25)))
+
 (setq inhibit-startup-message t)
 
 (setq frame-inhibit-implied-resize t)
 
 (setq default-frame-alist
       (append (list
-               '(font . "Monolisa-12")
+               '(font . "Monolisa-10")
                '(min-height . 1) '(height     . 45)
                '(min-width  . 1) '(width      . 81)
                )))
 
-(set-face-attribute 'fixed-pitch nil :font "Inconsolata-dz" :height 120 :weight 'regular)
-(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 140 :weight 'regular)
+(set-face-attribute 'fixed-pitch nil :font "Monolisa" :height 100 :weight 'regular)
+(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 100 :weight 'regular)
 
 ;; No beeping nor visible bell
 (setq ring-bell-function #'ignore
@@ -62,8 +67,13 @@
 
 (blink-cursor-mode 0)
 
-(setq-default fill-column 80)
 (setq-default line-spacing 0.1)
+
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+(setq scroll-step 1) ;; keyboard scroll one line at a time
+(setq use-dialog-box nil) ;; Disable dialog boxes since they weren't working in Mac OSX
 
 (provide 'init-ui)
 
