@@ -16,4 +16,17 @@
 ;; Enable line numbers for prog modes only
 (add-hook 'prog-mode-hook (lambda () (display-line-numbers-mode 1)))
 
+(use-package paren
+  :hook (prog-mode . show-paren-mode))
+
+(use-package rainbow-mode
+  :commands rainbow-mode)
+
+(use-package flycheck
+  :defer t
+  ;; :hook ((clojure-mode . flycheck-mode)
+  ;;        (clojurec-mode . flycheck-mode)
+  ;;        (clojurescript-mode . flycheck-mode))
+)
+
 (provide 'init-dev)

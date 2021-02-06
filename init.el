@@ -1,5 +1,4 @@
 ;;; init.el --- elliott's emacs configuration
-
 ;; copyright (c) 2021 elliott minns
 
 ;; author: elliott minns <elliott.minns@me.com>
@@ -22,15 +21,20 @@
 
 (update-load-path)
 
+(defun pinentry-emacs (desc prompt ok error)
+  (let ((str (read-passwd (concat (replace-regexp-in-string "%22" "\"" (replace-regexp-in-string "%0A" "\n" desc)) prompt ": "))))
+    str))
+
 (require 'init-window)
 
-(require'init-package)
+(require 'init-package)
+(require 'init-key)
+(require 'init-lsp)
 (require 'init-theme)
 (require 'init-evil)
 (require 'init-ui)
 (require 'init-dev)
 (require 'init-go)
-(require 'init-key)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
