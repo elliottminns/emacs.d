@@ -42,24 +42,9 @@
   :defer t
   :blackout auto-revert-mode)
 
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 25)))
-
 (setq inhibit-startup-message t)
 
 (setq frame-inhibit-implied-resize t)
-
-(setq default-frame-alist
-      (append (list
-               '(font . "Monolisa-10")
-               '(min-height . 1) '(height     . 45)
-               '(min-width  . 1) '(width      . 81)
-               )))
-
-(set-face-attribute 'fixed-pitch nil :font "Monolisa" :height 100 :weight 'regular)
-(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 100 :weight 'regular)
 
 ;; No beeping nor visible bell
 (setq ring-bell-function #'ignore

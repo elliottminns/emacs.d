@@ -1,15 +1,5 @@
 ;; init-key.el
 
-(use-package blackout
-  :straight (:host github :repo "raxod502/blackout"))
-
-(use-package which-key
-  :blackout t
-  :hook (after-init . which-key-mode)
-  :diminish which-key-mode
-  :config
-  (setq which-key-idle-delay 0.5))
-
 (use-package general
   :config
   (general-create-definer my-leader-def
