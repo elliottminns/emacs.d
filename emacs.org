@@ -86,7 +86,7 @@ doom-themes are a great set of theme.
 
 #+begin_src emacs-lisp
 (use-package doom-themes
-  :init (load-theme 'doom-palenight t))
+  :init (load-theme 'doom-nord t))
 #+end_src
 
 ** Better Modeline

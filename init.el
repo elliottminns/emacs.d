@@ -41,7 +41,7 @@
 (set-face-attribute 'variable-pitch nil :font "Cantarell" :height kraken/default-variable-font-size :weight 'regular)
 
 (use-package doom-themes
-  :init (load-theme 'doom-palenight t))
+  :init (load-theme 'doom-nord t))
 
 (use-package all-the-icons)
 
