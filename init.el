@@ -23,6 +23,9 @@
 
 (straight-use-package 'use-package)
 
+;; Add my library path to load-path
+(push "~/.emacs.d/lisp" load-path)
+
 (server-start)
 
 (setq kraken/exwm-enabled (and (eq window-system 'x)
@@ -48,13 +51,6 @@
     (python . t)))
 	
 (setq org-confirm-babel-evaluate nil)
-
-;; This is needed as of Org 9.2
-(require 'org-tempo)
-
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -133,7 +129,7 @@
   (auto-fill-mode 0)
   (visual-line-mode 1)
   (setq evil-auto-indent nil)
-  (diminish org-indent-mode))
+  (blackout org-indent-mode))
 
 (use-package org
   :defer t
@@ -319,7 +315,7 @@
 
 (use-package git-gutter
   :straight git-gutter-fringe
-  :diminish
+  :blackout
   :hook ((text-mode . git-gutter-mode)
          (prog-mode . git-gutter-mode))
   :config
