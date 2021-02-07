@@ -315,6 +315,17 @@ doom-themes are a great set of theme.
 
 ** Notifications
 
+[[https://github.com/jwiegley/alert][alert]] is a great library for showing notifications from other packages in a variety of ways.  For now I just use it to surface desktop notifications from package code.
+
+#+begin_src emacs-lisp
+
+  (use-package alert
+    :commands alert
+    :config
+    (setq alert-default-style 'notifications))
+
+#+end_src
+
 ** UI Toggles
 
 #+begin_src emacs-lisp

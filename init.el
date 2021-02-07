@@ -161,6 +161,11 @@
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
 
+(use-package alert
+  :commands alert
+  :config
+  (setq alert-default-style 'notifications))
+
 (kraken/leader-key-def
   "t"  '(:ignore t :which-key "toggles")
   "tt" '(load-theme :which-key "choose theme")
