@@ -352,7 +352,7 @@ Information on template expansion can be found in the [[https://orgmode.org/manu
       ("jj" "Journal" entry
            (file+olp+datetree ,(kraken/get-todays-journal-file-name))
            ;"\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-           ,(kraken/read-file-as-string "~/.org/Notes/Templates/Daily.org")
+           ,(kraken/read-file-as-string "~/.org/notes/Templates/Daily.org")
            :clock-in :clock-resume
            :empty-lines 1)
       ("jm" "Meeting" entry
@@ -380,9 +380,9 @@ Information on template expansion can be found in the [[https://orgmode.org/manu
            "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
 
       ("m" "Metrics Capture")
-      ("mw" "Weight" table-line (file+headline "~/Notes/Metrics.org" "Weight")
+      ("mw" "Weight" table-line (file+headline "~/.org/notes/Metrics.org" "Weight")
        "| %U | %^{Weight} | %^{Notes} |" :kill-buffer)
-      ("mp" "Blood Pressure" table-line (file+headline "~/Notes/Metrics.org" "Blood Pressure")
+      ("mp" "Blood Pressure" table-line (file+headline "~/.org/notes/Metrics.org" "Blood Pressure")
        "| %U | %^{Systolic} | %^{Diastolic} | %^{Notes}" :kill-buffer)))
 
 #+end_src

@@ -5,25 +5,25 @@
 ;; Make frame transparency overridable
 (defvar kraken/frame-transparency '(90 . 90))
 
+;; Bootstrap straight.el
 (setq straight-use-package-by-default t
-      straight-build-dir (format "build-%s" emacs-version))
+  straight-build-dir (format "build-%s" emacs-version))
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
       (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
+        "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+        'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
 (straight-use-package 'use-package)
 
-;; Add my library path to load-path
 (push "~/.emacs.d/lisp" load-path)
 
 (server-start)
@@ -54,17 +54,66 @@
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
+(global-set-key (kbd "C-M-u") 'universal-argument)
+
 (global-set-key (kbd "C-x C-b") #'ibuffer)
+
+(defun kraken/evil-hook ()
+  (dolist (mode '(custom-mode
+                  eshell-mode
+                  git-rebase-mode
+                  erc-mode
+                  circe-server-mode
+                  circe-chat-mode
+                  circe-query-mode
+                  sauron-mode
+                  term-mode))
+    (add-to-list 'evil-emacs-state-modes mode)))
+
+(defun kraken/dont-arrow-me-bro ()
+  (interactive)
+  (message "Arrow keys are bad, you know?"))
+
+(use-package undo-tree
+  :init
+  (global-undo-tree-mode 1))
 
 (use-package evil
   :init
+  (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-i-jump nil)
+  (setq evil-respect-visual-line-mode t)
+  (setq evil-undo-system 'undo-tree)
   :config
-  (evil-mode 1))
+  (add-hook 'evil-mode-hook 'kraken/evil-hook)
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+  ;; Use visual line motions even outside of visual-line-mode buffers
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+  ;; Disable arrow keys in normal and visual modes
+  (define-key evil-normal-state-map (kbd "<left>") 'kraken/dont-arrow-me-bro)
+  (define-key evil-normal-state-map (kbd "<right>") 'kraken/dont-arrow-me-bro)
+  (define-key evil-normal-state-map (kbd "<down>") 'kraken/dont-arrow-me-bro)
+  (define-key evil-normal-state-map (kbd "<up>") 'kraken/dont-arrow-me-bro)
+  (evil-global-set-key 'motion (kbd "<left>") 'kraken/dont-arrow-me-bro)
+  (evil-global-set-key 'motion (kbd "<right>") 'kraken/dont-arrow-me-bro)
+  (evil-global-set-key 'motion (kbd "<down>") 'kraken/dont-arrow-me-bro)
+  (evil-global-set-key 'motion (kbd "<up>") 'kraken/dont-arrow-me-bro)
+
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
 
 (use-package evil-collection
-  :after (evil)
-  :init
+  :after evil
+  :custom
+  (evil-collection-outline-bind-tab-p nil)
+  :config
   (evil-collection-init))
 
 (use-package general
@@ -174,7 +223,7 @@
   ;; NOTE: Subsequent sections are still part of this use-package block!
 
 (require 'kraken-org)
-(require 'kraken-workflow)
+;(require 'kraken-workflow)
 
 ;; Since we don't want to disable org-confirm-babel-evaluate all
 ;; of the time, do it around the after-save-hook
@@ -420,21 +469,6 @@
 
 (kraken/leader-key-def
   "ac"  '(cfw:open-org-calendar :which-key "calendar"))
-
-(defun update-load-path (&rest _)
-  "Update `load-path'."
-  (dolist (dir '("site-lisp" "lisp"))
-    (push (expand-file-name dir user-emacs-directory) load-path)))
-
-(defun add-subdirs-to-load-path (&rest _)
-  "Add subdirectories to `load-path'."
-  (let ((default-directory (expand-file-name "site-lisp" user-emacs-directory)))
-    (normal-top-level-add-subdirs-to-load-path)))
-
-(advice-add #'package-initialize :after #'update-load-path)
-(advice-add #'package-initialize :after #'add-subdirs-to-load-path)
-
-(update-load-path)
 
 (require 'init-key)
 (require 'init-lsp)

@@ -22,18 +22,19 @@ straight.el for reproducible package management
 
 #+begin_src emacs-lisp
 
+;; Bootstrap straight.el
 (setq straight-use-package-by-default t
-      straight-build-dir (format "build-%s" emacs-version))
+  straight-build-dir (format "build-%s" emacs-version))
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
       (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
+        "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+        'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
@@ -48,14 +49,32 @@ use-package to automatically manage package installation
 
 #+end_src
 
+* Keep .emacs.d Clean
+
+I don't want a bunch of transient files showing up as untracked in the Git repo so I move them all to another location. This is currently disabled until I'm able to make it work with straight.el
+
+#+begin_src emacs-lisp :tangle no
+
+  ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
+  (setq user-emacs-directory (expand-file-name "~/.cache/emacs/")
+       url-history-file (expand-file-name "url/history" user-emacs-directory))
+
+  ;; Use no-littering to automatically set common paths to the new user-emacs-directory
+   (use-package no-littering)
+
+  ;; Keep customization settings in a temporary file (thanks Ambrevar!)
+  (setq custom-file
+        (if (boundp 'server-socket-dir)
+            (expand-file-name "custom.el" server-socket-dir)
+          (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
+  (load custom-file t)
+
+#+end_src
+
 * Update Load Path
-
-I've got a folder of custom Emacs Lisp libraries which must be added to the load path.
-
 #+begin_src emacs-lisp
 
-  ;; Add my library path to load-path
-  (push "~/.emacs.d/lisp" load-path)
+(push "~/.emacs.d/lisp" load-path)
 
 #+end_src
 
@@ -124,6 +143,16 @@ Load up the desktop environment if on a machine that supports it and the =--use-
 
 #+end_src
 
+** Rebind C-u
+
+Since I let =evil-mode= take over =C-u= for buffer scrolling, I need to re-bind the =universal-argument= command to another key sequence.  I'm choosing =C-M-u= for this purpose.
+
+#+begin_src emacs-lisp
+
+  (global-set-key (kbd "C-M-u") 'universal-argument)
+
+#+end_src
+
 ** IBuffer
 
 #+begin_src emacs-lisp
@@ -136,16 +165,63 @@ Load up the desktop environment if on a machine that supports it and the =--use-
 
 #+begin_src emacs-lisp
 
-(use-package evil
-  :init
-  (setq evil-want-keybinding nil)
-  :config
-  (evil-mode 1))
+  (defun kraken/evil-hook ()
+    (dolist (mode '(custom-mode
+                    eshell-mode
+                    git-rebase-mode
+                    erc-mode
+                    circe-server-mode
+                    circe-chat-mode
+                    circe-query-mode
+                    sauron-mode
+                    term-mode))
+      (add-to-list 'evil-emacs-state-modes mode)))
 
-(use-package evil-collection
-  :after (evil)
-  :init
-  (evil-collection-init))
+  (defun kraken/dont-arrow-me-bro ()
+    (interactive)
+    (message "Arrow keys are bad, you know?"))
+
+  (use-package undo-tree
+    :init
+    (global-undo-tree-mode 1))
+
+  (use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-C-i-jump nil)
+    (setq evil-respect-visual-line-mode t)
+    (setq evil-undo-system 'undo-tree)
+    :config
+    (add-hook 'evil-mode-hook 'kraken/evil-hook)
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+    ;; Use visual line motions even outside of visual-line-mode buffers
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+    ;; Disable arrow keys in normal and visual modes
+    (define-key evil-normal-state-map (kbd "<left>") 'kraken/dont-arrow-me-bro)
+    (define-key evil-normal-state-map (kbd "<right>") 'kraken/dont-arrow-me-bro)
+    (define-key evil-normal-state-map (kbd "<down>") 'kraken/dont-arrow-me-bro)
+    (define-key evil-normal-state-map (kbd "<up>") 'kraken/dont-arrow-me-bro)
+    (evil-global-set-key 'motion (kbd "<left>") 'kraken/dont-arrow-me-bro)
+    (evil-global-set-key 'motion (kbd "<right>") 'kraken/dont-arrow-me-bro)
+    (evil-global-set-key 'motion (kbd "<down>") 'kraken/dont-arrow-me-bro)
+    (evil-global-set-key 'motion (kbd "<up>") 'kraken/dont-arrow-me-bro)
+
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
+
+  (use-package evil-collection
+    :after evil
+    :custom
+    (evil-collection-outline-bind-tab-p nil)
+    :config
+    (evil-collection-init))
 
 #+end_src
 
@@ -314,14 +390,6 @@ Set up Org Mode with a baseline configuration.  The following sections will add 
 
 #+end_src
 
-*Guix Packages*
-
-#+begin_src scheme :noweb-ref packages :noweb-sep ""
-
-  "emacs-org"
-
-#+end_src
-
 ** Workflow Configuration
 
 I document and configure my org-mode workflow in a separate document: [[file:Workflow.org][Workflow.org]]
@@ -329,7 +397,7 @@ I document and configure my org-mode workflow in a separate document: [[file:Wor
 #+begin_src emacs-lisp
 
   (require 'kraken-org)
-  (require 'kraken-workflow)
+  ;(require 'kraken-workflow)
 
 #+end_src
 
@@ -720,21 +788,6 @@ files contained within the repo.  More information at the [[https://github.com/a
 * Requires for the mean time
 
 #+begin_src emacs-lisp
-
-(defun update-load-path (&rest _)
-  "Update `load-path'."
-  (dolist (dir '("site-lisp" "lisp"))
-    (push (expand-file-name dir user-emacs-directory) load-path)))
-
-(defun add-subdirs-to-load-path (&rest _)
-  "Add subdirectories to `load-path'."
-  (let ((default-directory (expand-file-name "site-lisp" user-emacs-directory)))
-    (normal-top-level-add-subdirs-to-load-path)))
-
-(advice-add #'package-initialize :after #'update-load-path)
-(advice-add #'package-initialize :after #'add-subdirs-to-load-path)
-
-(update-load-path)
 
 (require 'init-key)
 (require 'init-lsp)
