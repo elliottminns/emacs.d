@@ -17,7 +17,7 @@
   :init
   ;; This doesn't actually load Selectrum.
   (selectrum-mode +1)
-  (my-leader-def "TAB" #'selectrum-repeat))
+  (kraken/leader-key-def "TAB" #'selectrum-repeat))
 
 ;; Package `prescient' is a library for intelligent sorting and
 ;; filtering in various contexts.
