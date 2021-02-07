@@ -168,6 +168,42 @@
   "tm" 'toggle-frame-maximized
   "tM" 'toggle-frame-fullscreen)
 
+(setq epa-pinentry-mode 'loopback)
+(use-package pinentry
+  :init (pinentry-start))
+
+(setq-default tab-width 2)
+(setq-default evil-shift-width tab-width)
+
+(setq-default indent-tabs-mode nil)
+
+(use-package evil-nerd-commenter
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
+(use-package ws-butler
+  :hook ((text-mode . ws-butler-mode)
+         (prog-mode . ws-butler-mode)))
+
+(use-package parinfer
+  :hook ((clojure-mode . parinfer-mode)
+         (emacs-lisp-mode . parinfer-mode)
+         (common-lisp-mode . parinfer-mode)
+         (scheme-mode . parinfer-mode)
+         (lisp-mode . parinfer-mode))
+  :config
+  (setq parinfer-extensions
+      '(defaults       ; should be included.
+        pretty-parens  ; different paren styles for different modes.
+        evil           ; If you use Evil.
+        smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
+        smart-yank)))  ; Yank behavior depend on mode.
+
+(kraken/leader-key-def
+  "tp" 'parinfer-toggle-mode)
+
+(use-package origami
+  :hook (yaml-mode . origami-mode))
+
 ;; TODO: Mode this to another section
 (setq-default fill-column 80)
 
@@ -194,12 +230,12 @@
         org-startup-folded 'content
         org-cycle-separator-lines 2)
 
-  (setq org-modules
-    '(org-crypt
-        org-habit
-        org-bookmark
-        org-eshell
-        org-irc))
+  ;(setq org-modules
+    ;'(org-crypt
+        ;org-habit
+        ;org-bookmark
+        ;org-eshell
+        ;org-irc))
 
   (setq org-refile-targets '((nil :maxlevel . 2)
                              (org-agenda-files :maxlevel . 2)))
